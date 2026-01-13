@@ -40,7 +40,7 @@
         .looping-text { position: absolute; font-size: 1rem; letter-spacing: 7px; color: var(--accent); opacity: 0; transition: all 1.2s ease; transform: translateY(20px); text-transform: uppercase; text-align: center; width: 100%; }
         .looping-text.active { opacity: 0.9; transform: translateY(0); }
 
-        /* QUOTE AREA & SCROLL INDICATOR (OFF-VIDEO) */
+        /* TRANSITION AREA (QUOTE + SCROLL) */
         .transition-area { text-align: center; padding: 60px 10% 20px; background: #000; transition: opacity 0.6s ease; display: flex; flex-direction: column; align-items: center; gap: 40px; }
         #random-quote { font-family: 'Roundo'; font-size: 0.7rem; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; opacity: 0.3; }
         
@@ -68,6 +68,12 @@
         .v-item:hover img { filter: saturate(1.2) brightness(0.7); transform: scale(1.03); }
         .v-item h3 { font-family: 'Roundo'; font-size: 1.4rem; color: var(--accent); margin-bottom: 8px; letter-spacing: 2px; }
 
+        /* STATS SECTION */
+        .stats { display: flex; justify-content: space-around; padding: 100px 10%; border-top: 1px solid #111; opacity: 0; transform: translateY(50px); transition: all 1.2s ease; }
+        .stats.active { opacity: 1; transform: translateY(0); }
+        .stat-item h4 { font-family: 'Roundo'; font-size: 3rem; color: var(--accent); }
+        .stat-item p { font-size: 0.6rem; letter-spacing: 4px; opacity: 0.5; text-transform: uppercase; }
+
         /* MODAL */
         #v-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 150000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
         .m-content { width: 90%; max-width: 1100px; aspect-ratio: 16/9; position: relative; }
@@ -75,13 +81,14 @@
         iframe { width: 100%; height: 100%; border: none; }
         .grain { position: fixed; inset: 0; background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Grain.png'); opacity: 0.04; pointer-events: none; z-index: 99998; }
         footer { padding: 100px 0; text-align: center; border-top: 1px solid #111; }
+        .footer-link { font-family: 'Roundo'; font-size: 0.9rem; letter-spacing: 10px; color: var(--accent); text-decoration: none; opacity: 0.4; transition: 0.5s; }
     </style>
 </head>
 <body>
     <div id="cursor"></div><div id="cursor-f"></div><div class="grain"></div>
     <div id="loader"><div class="load-text">ESTABLISHING CONNECTION</div><div class="load-bar-wrap"><div class="load-bar-fill" id="loadBar"></div></div></div>
 
-    <div id="v-modal"><div class="m-content"><button class="m-close" id="closeBtn">TERMINATE SESSION [X]</button><iframe id="m-iframe" src="" allow="autoplay; fullscreen"></iframe></div></div>
+    <div id="v-modal"><div class="m-content"><button class="m-close" id="closeBtn">CLOSE [X]</button><iframe id="m-iframe" src="" allow="autoplay; fullscreen"></iframe></div></div>
 
     <nav>
         <div class="logo-small">BADS</div>
@@ -96,7 +103,9 @@
     <header class="hero">
         <div class="video-strip-container">
             <div id="video-tint"></div>
-            <video muted loop playsinline id="hero-video-bg"><source src="assets/videoplayback.mp4" type="video/mp4"></video>
+            <video muted loop playsinline id="hero-video-bg">
+                <source src="https://res.cloudinary.com/dlplugfcv/video/upload/v1768284071/videoplayback_nyovxh.mp4" type="video/mp4">
+            </video>
             <h1 id="typewriter"></h1>
             <div id="sub-sentence-container">
                 <div class="looping-text">The School-Day Brotherhood</div>
@@ -155,6 +164,14 @@
         </div>
     </section>
 
+    <section class="stats" id="stats-section">
+        <div class="stat-item"><h4>2.5K</h4><p>Total Reach</p></div>
+        <div class="stat-item"><h4>EST</h4><p>2024</p></div>
+        <div class="stat-item"><h4>2026</h4><p>Current Phase</p></div>
+    </section>
+
+    <footer><a href="https://youtube.com/@bads4ever" target="_blank" class="footer-link">SUBSCRIBE FOR MORE</a></footer>
+
     <script>
         const c = document.getElementById('cursor'), f = document.getElementById('cursor-f');
         document.addEventListener('mousemove', (e) => {
@@ -195,7 +212,7 @@
         }
 
         const obs = new IntersectionObserver((ents) => { ents.forEach(e => { if(e.isIntersecting) { e.target.classList.add('active'); } else { e.target.classList.remove('active'); } }); }, { threshold: 0.1 });
-        document.querySelectorAll('.collective-reveal, .grid-section').forEach(el => obs.observe(el));
+        document.querySelectorAll('.collective-reveal, .grid-section, .stats').forEach(el => obs.observe(el));
 
         window.addEventListener('scroll', () => {
             if (window.scrollY < 10) {
