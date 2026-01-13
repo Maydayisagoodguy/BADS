@@ -2,18 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>BADS | OFFICIAL STUDIO</title>
     <link href="https://api.fontshare.com/v2/css?f[]=roundo@700&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #ff0000; --bg: #000; }
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* CURSOR LOGIC - ONLY ENABLE ON DESKTOP MOUSE */
+        @media (pointer: fine) {
+            * { cursor: none; }
+            #cursor { position: fixed; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 200000; box-shadow: 0 0 10px var(--accent); }
+            #cursor-f { position: fixed; width: 30px; height: 30px; border: 1px solid rgba(255,0,0,0.3); border-radius: 50%; pointer-events: none; z-index: 199999; transition: transform 0.12s ease-out; }
+        }
+        @media (pointer: coarse) {
+            #cursor, #cursor-f { display: none !important; }
+        }
+
         body { background: var(--bg); color: #fff; font-family: 'Google Sans', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
         
-        /* CURSOR */
-        #cursor { position: fixed; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 200000; box-shadow: 0 0 10px var(--accent); }
-        #cursor-f { position: fixed; width: 30px; height: 30px; border: 1px solid rgba(255,0,0,0.3); border-radius: 50%; pointer-events: none; z-index: 199999; transition: transform 0.12s ease-out; }
-
         /* PRELOADER */
         #loader { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 1s cubic-bezier(0.85, 0, 0.15, 1); }
         .load-text { font-family: 'Roundo'; font-size: 0.7rem; letter-spacing: 5px; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; }
@@ -23,17 +30,17 @@
         /* NAVIGATION */
         nav { width: 100%; padding: 50px 6%; display: flex; justify-content: space-between; align-items: center; background: #000; }
         .logo-small { font-family: 'Roundo'; font-size: 1.1rem; letter-spacing: 4px; font-weight: 700; color: var(--accent); }
+        .status-tag { font-size: 0.5rem; letter-spacing: 3px; color: var(--accent); opacity: 0.6; text-transform: uppercase; margin-top: 5px; }
         .nav-links a { color: #fff; text-decoration: none; margin-left: 35px; font-size: 0.7rem; letter-spacing: 3px; opacity: 0.4; transition: 0.4s; text-transform: uppercase; }
-        .nav-links a:hover { opacity: 1; color: var(--accent); }
 
-        /* HERO & VIDEO STRIP */
-        .hero { position: relative; width: 100%; padding-top: 20px; background: #000; z-index: 5; }
+        /* HERO */
+        .hero { position: relative; width: 100%; padding-top: 20px; background: #000; z-index: 5; margin-bottom: 50px; }
         .video-strip-container { position: relative; width: 100%; height: 65vh; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         #video-tint { position: absolute; inset: 0; background: rgba(255, 0, 0, 0); z-index: 2; transition: background 1.5s ease; pointer-events: none; }
         #video-tint.active { background: rgba(255, 0, 0, 0.25); } 
         #hero-video-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(30%); z-index: 1; transition: playbackRate 0.8s ease; }
         
-        #typewriter { font-family: 'Roundo'; font-size: clamp(4rem, 18vw, 12rem); font-weight: 700; color: var(--accent); letter-spacing: -8px; z-index: 10; display: inline-block; line-height: 1; transition: opacity 1.5s ease, transform 1.5s ease; opacity: 1; }
+        #typewriter { font-family: 'Roundo'; font-size: clamp(3rem, 15vw, 12rem); font-weight: 700; color: var(--accent); letter-spacing: -8px; z-index: 10; display: inline-block; line-height: 1; transition: opacity 1.5s ease, transform 1.5s ease; opacity: 1; }
         #typewriter.fade-out { opacity: 0 !important; transform: scale(0.95); pointer-events: none; }
 
         #sub-sentence-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 11; display: flex; justify-content: center; align-items: center; width: 100%; }
@@ -43,60 +50,80 @@
         /* TRANSITION AREA (QUOTE + SCROLL) */
         .transition-area { text-align: center; padding: 60px 10% 20px; background: #000; transition: opacity 0.6s ease; display: flex; flex-direction: column; align-items: center; gap: 40px; }
         #random-quote { font-family: 'Roundo'; font-size: 0.7rem; letter-spacing: 4px; color: var(--accent); text-transform: uppercase; opacity: 0.3; }
-        
         .scroll-indicator { transition: opacity 0.6s ease; text-align: center; }
         .scroll-text { font-family: 'Roundo'; font-size: 0.5rem; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; opacity: 0.5; margin-bottom: 12px; }
         .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--accent), transparent); margin: 0 auto; animation: scrollAnim 2s infinite; }
-        @keyframes scrollAnim { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 50.1% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
 
-        /* THE COLLECTIVE - CENTERED & RED */
-        .about-section { height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; text-align: center; position: relative; z-index: 1; }
-        .collective-reveal { opacity: 0 !important; transform: translateY(100px); transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), color 1s ease; color: var(--accent); }
+        /* THE COLLECTIVE */
+        .about-section { height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; text-align: center; padding: 0 10%; }
+        .collective-reveal { opacity: 0 !important; transform: translateY(100px); transition: 1.2s ease, color 1s ease; color: var(--accent); }
         .collective-reveal.active { opacity: 1 !important; transform: translateY(0); }
         .about-title { font-family: 'Roundo'; font-size: 0.8rem; letter-spacing: 10px; text-transform: uppercase; margin-bottom: 30px; }
-        .about-text { max-width: 900px; font-size: 1.2rem; line-height: 2; font-weight: 300; margin: 0 auto; }
+        .about-text { max-width: 900px; font-size: 1.5rem; line-height: 2.2; font-weight: 300; margin: 0 auto; }
         .about-text span { font-weight: 700; color: var(--accent); }
 
-        /* GRID SECTIONS */
+        /* GRIDS */
         .grid-section { padding: 150px 6%; opacity: 0; transform: translateY(100px); transition: all 1.2s ease; }
         .grid-section.active { opacity: 1; transform: translateY(0); }
         .section-header { font-family: 'Roundo'; font-size: 0.8rem; letter-spacing: 10px; color: var(--accent); text-transform: uppercase; margin-bottom: 40px; text-align: center; opacity: 0.6; }
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 60px; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 60px; }
         .v-item { text-decoration: none; color: #fff; position: relative; }
         .v-img { width: 100%; aspect-ratio: 16/9; border-radius: 4px; overflow: hidden; border: 1px solid #111; margin-bottom: 25px; position: relative; }
         .v-img img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0) brightness(0.4); transition: 0.8s; }
         .v-item:hover img { filter: saturate(1.2) brightness(0.7); transform: scale(1.03); }
         .v-item h3 { font-family: 'Roundo'; font-size: 1.4rem; color: var(--accent); margin-bottom: 8px; letter-spacing: 2px; }
 
-        /* STATS SECTION */
+        /* STATS */
         .stats { display: flex; justify-content: space-around; padding: 100px 10%; border-top: 1px solid #111; opacity: 0; transform: translateY(50px); transition: all 1.2s ease; }
         .stats.active { opacity: 1; transform: translateY(0); }
         .stat-item h4 { font-family: 'Roundo'; font-size: 3rem; color: var(--accent); }
         .stat-item p { font-size: 0.6rem; letter-spacing: 4px; opacity: 0.5; text-transform: uppercase; }
 
+        /* MOBILE FIXES - THE MAGIC PART */
+        @media (max-width: 768px) {
+            nav { padding: 30px 6%; }
+            .nav-links a { margin-left: 15px; font-size: 0.55rem; letter-spacing: 1px; }
+            .status-tag { display: none; }
+            #typewriter { font-size: 4rem; letter-spacing: -2px; }
+            .looping-text { font-size: 0.7rem; letter-spacing: 2px; }
+            .about-section { height: auto; padding: 100px 10%; }
+            .about-text { font-size: 1.1rem; line-height: 1.8; }
+            .video-grid { grid-template-columns: 1fr; gap: 40px; }
+            .grid-section { padding: 80px 6%; }
+            .v-item h3 { font-size: 1.1rem; }
+            .stats { flex-direction: column; gap: 40px; text-align: center; }
+            .stat-item h4 { font-size: 2.5rem; }
+            .m-close { top: -30px; right: 10px; font-size: 0.5rem; }
+        }
+
         /* MODAL */
         #v-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 150000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
-        .m-content { width: 90%; max-width: 1100px; aspect-ratio: 16/9; position: relative; }
+        .m-content { width: 95%; max-width: 1100px; aspect-ratio: 16/9; position: relative; }
         .m-close { position: absolute; top: -50px; right: 0; color: #fff; background: none; border: none; font-family: 'Roundo'; letter-spacing: 2px; }
         iframe { width: 100%; height: 100%; border: none; }
-        .grain { position: fixed; inset: 0; background: url('https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Grain.png'); opacity: 0.04; pointer-events: none; z-index: 99998; }
-        footer { padding: 100px 0; text-align: center; border-top: 1px solid #111; }
-        .footer-link { font-family: 'Roundo'; font-size: 0.9rem; letter-spacing: 10px; color: var(--accent); text-decoration: none; opacity: 0.4; transition: 0.5s; }
+        @keyframes scrollAnim { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 50.1% { transform: scaleY(1); transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+        footer { padding: 80px 0; text-align: center; border-top: 1px solid #111; }
+        .footer-link { font-family: 'Roundo'; font-size: 0.8rem; letter-spacing: 8px; color: var(--accent); text-decoration: none; opacity: 0.4; }
     </style>
 </head>
 <body>
-    <div id="cursor"></div><div id="cursor-f"></div><div class="grain"></div>
-    <div id="loader"><div class="load-text">ESTABLISHING CONNECTION</div><div class="load-bar-wrap"><div class="load-bar-fill" id="loadBar"></div></div></div>
+    <div id="cursor"></div><div id="cursor-f"></div>
+    <div id="loader">
+        <div class="load-text">ESTABLISHING CONNECTION</div>
+        <div class="load-bar-wrap"><div class="load-bar-fill" id="loadBar"></div></div>
+    </div>
 
     <div id="v-modal"><div class="m-content"><button class="m-close" id="closeBtn">CLOSE [X]</button><iframe id="m-iframe" src="" allow="autoplay; fullscreen"></iframe></div></div>
 
     <nav>
-        <div class="logo-small">BADS</div>
+        <div>
+            <div class="logo-small">BADS</div>
+            <div class="status-tag">SYSTEM_ACTIVE</div>
+        </div>
         <div class="nav-links">
             <a href="#about">Studio</a>
             <a href="#work">Archives</a>
             <a href="#music">Music</a>
-            <a href="https://youtube.com/@bads4ever" target="_blank">Channel</a>
         </div>
     </nav>
 
@@ -108,10 +135,10 @@
             </video>
             <h1 id="typewriter"></h1>
             <div id="sub-sentence-container">
-                <div class="looping-text">The School-Day Brotherhood</div>
-                <div class="looping-text">Cinematic Visions & Digital Soundscapes</div>
-                <div class="looping-text">Bimal • Adithyan • Densil • Shivkanth</div>
-                <div class="looping-text">The Archive is Forever</div>
+                <div class="looping-text">School-Day Brotherhood</div>
+                <div class="looping-text">Cinematic Visions</div>
+                <div class="looping-text">Bimal • Adi • Densil • Shiv</div>
+                <div class="looping-text">Archive is Forever</div>
             </div>
         </div>
     </header>
@@ -128,10 +155,11 @@
         <div class="collective-reveal">
             <div class="about-title">The Collective</div>
             <p class="about-text">
-                What started as a shared passion between school friends has evolved into a multi-sensory movement. 
+                What started as a shared passion between school friends has evolved into a movement. 
                 <span>Bimal</span>, <span>Adithyan</span>, <span>Densil</span>, and <span>Shivkanth</span> formed BADS to push 
-                the boundaries of cinematic storytelling and sonic architecture. We produce the <span>Music</span> 
-                and <span>Raw Energy</span> that define the night. This is our archive. <span>BADS4EVER</span>.
+                the boundaries of cinematic storytelling.
+                <br><br>
+                <span>BADS4EVER</span>.
             </p>
         </div>
     </section>
@@ -141,11 +169,11 @@
         <div class="video-grid">
             <div class="v-item" onclick="openV('Khuq6t9uXUs')">
                 <div class="v-img"><img src="https://img.youtube.com/vi/Khuq6t9uXUs/maxresdefault.jpg"></div>
-                <h3>14JUL24</h3><p>Visual Narrative</p>
+                <h3>14JUL24</h3>
             </div>
             <div class="v-item" onclick="openV('UrY5RxMeKRY')">
                 <div class="v-img"><img src="https://img.youtube.com/vi/UrY5RxMeKRY/maxresdefault.jpg"></div>
-                <h3>PROJECT URY</h3><p>Experimental Motion</p>
+                <h3>PROJECT URY</h3>
             </div>
         </div>
     </section>
@@ -155,11 +183,11 @@
         <div class="video-grid">
             <div class="v-item" onclick="openV('NXh_I0Hnzuw')">
                 <div class="v-img"><img src="https://img.youtube.com/vi/NXh_I0Hnzuw/hqdefault.jpg"></div>
-                <h3>VagabondDiary.mp3</h3><p>Original Score</p>
+                <h3>VagabondDiary.mp3</h3>
             </div>
             <div class="v-item" onclick="openV('cZhG-hFjzq8')">
                 <div class="v-img"><img src="https://img.youtube.com/vi/cZhG-hFjzq8/hqdefault.jpg"></div>
-                <h3>SerialExperiment.mp3</h3><p>Experimental Audio</p>
+                <h3>SerialExperiment.mp3</h3>
             </div>
         </div>
     </section>
@@ -170,57 +198,43 @@
         <div class="stat-item"><h4>2026</h4><p>Current Phase</p></div>
     </section>
 
-    <footer><a href="https://youtube.com/@bads4ever" target="_blank" class="footer-link">SUBSCRIBE FOR MORE</a></footer>
+    <footer><a href="https://youtube.com/@bads4ever" target="_blank" class="footer-link">SUBSCRIBE</a></footer>
 
     <script>
         const c = document.getElementById('cursor'), f = document.getElementById('cursor-f');
-        document.addEventListener('mousemove', (e) => {
-            c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
-            f.style.transform = `translate3d(${e.clientX - 15}px, ${e.clientY - 15}px, 0)`;
-        });
+        if(c) {
+            document.addEventListener('mousemove', (e) => {
+                c.style.left = e.clientX + 'px'; c.style.top = e.clientY + 'px';
+                f.style.transform = `translate3d(${e.clientX - 15}px, ${e.clientY - 15}px, 0)`;
+            });
+        }
 
-        const quotes = ["\"Vision is the art of seeing things invisible.\"", "\"Sound is the vocabulary of the soul.\"", "\"The archive is where memories become eternal.\"", "\"Created by the night, for the night.\"", "\"Four minds. One frequency.\"", "\"Chaos is only order waiting to be understood.\""];
+        const quotes = ["\"Vision is invisible.\"", "\"Sound is the soul.\"", "\"Memory is eternal.\"", "\"Created by the night.\"", "\"Four minds. One frequency.\"", "\"Chaos is order.\""];
         document.getElementById('random-quote').textContent = quotes[Math.floor(Math.random() * quotes.length)];
 
         const video = document.getElementById('hero-video-bg'), tint = document.getElementById('video-tint'), loadBar = document.getElementById('loadBar'), typewriter = document.getElementById('typewriter'), sentences = document.querySelectorAll('.looping-text'), transArea = document.getElementById('trans-area');
-        let idx = 0, sentenceIndex = 0, isTyping = false;
+        let idx = 0, sentenceIndex = 0, isTyping = false, progress = 0;
 
-        let progress = 0;
         const interval = setInterval(() => {
-            progress += 5;
-            if (progress >= 100) { clearInterval(interval); document.getElementById('loader').style.transform = 'translateY(-100%)'; video.play(); startBadsSequence(); }
+            progress += 10;
             loadBar.style.width = progress + '%';
+            if (progress >= 100) { 
+                clearInterval(interval); 
+                document.getElementById('loader').style.transform = 'translateY(-100%)'; 
+                video.play(); startBadsSequence(); 
+            }
         }, 100);
 
-        function startBadsSequence() { 
-            if(isTyping) return;
-            isTyping = true; idx = 0; sentenceIndex = 0; typewriter.textContent = ""; 
-            typewriter.classList.remove('fade-out'); sentences.forEach(s => s.classList.remove('active')); type(); 
-        }
-
-        function type() { 
-            if(idx < "BADS".length) { typewriter.textContent += "BADS".charAt(idx); idx++; setTimeout(type, 200); } 
-            else { setTimeout(() => { typewriter.classList.add('fade-out'); setTimeout(runSentences, 1500); }, 3000); } 
-        }
-
-        function runSentences() { 
-            if (sentenceIndex < sentences.length) { 
-                sentences[sentenceIndex].classList.add('active'); 
-                if (sentenceIndex === sentences.length - 1) { isTyping = false; return; } 
-                setTimeout(() => { sentences[sentenceIndex].classList.remove('active'); sentenceIndex++; setTimeout(runSentences, 1000); }, 4000); 
-            } 
-        }
+        function startBadsSequence() { if(isTyping) return; isTyping = true; idx = 0; sentenceIndex = 0; typewriter.textContent = ""; typewriter.classList.remove('fade-out'); sentences.forEach(s => s.classList.remove('active')); type(); }
+        function type() { if(idx < "BADS".length) { typewriter.textContent += "BADS".charAt(idx); idx++; setTimeout(type, 200); } else { setTimeout(() => { typewriter.classList.add('fade-out'); setTimeout(runSentences, 1500); }, 3000); } }
+        function runSentences() { if (sentenceIndex < sentences.length) { sentences[sentenceIndex].classList.add('active'); if (sentenceIndex === sentences.length - 1) { isTyping = false; return; } setTimeout(() => { sentences[sentenceIndex].classList.remove('active'); sentenceIndex++; setTimeout(runSentences, 1000); }, 4000); } }
 
         const obs = new IntersectionObserver((ents) => { ents.forEach(e => { if(e.isIntersecting) { e.target.classList.add('active'); } else { e.target.classList.remove('active'); } }); }, { threshold: 0.1 });
         document.querySelectorAll('.collective-reveal, .grid-section, .stats').forEach(el => obs.observe(el));
 
         window.addEventListener('scroll', () => {
-            if (window.scrollY < 10) {
-                if(!isTyping && idx >= 4) startBadsSequence();
-                transArea.style.opacity = "1";
-            } else {
-                transArea.style.opacity = "0";
-            }
+            if (window.scrollY < 10) { if(!isTyping && idx >= 4) startBadsSequence(); transArea.style.opacity = "1"; } 
+            else { transArea.style.opacity = "0"; }
             if (window.scrollY > 200) { video.playbackRate = 0.5; tint.classList.add('active'); } 
             else { video.playbackRate = 1.0; tint.classList.remove('active'); }
         });
